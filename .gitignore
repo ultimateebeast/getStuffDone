@@ -1,0 +1,58 @@
+# Node modules
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build output
+client/build/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# Coverage
+coverage/
+
+# Misc
+*.tgz
+*.zip
+
+# PWA cache
+client/public/icon-192x192.png
+client/public/icon-512x512.png
+
+# Service worker cache
+service-worker.js
+
+# Others
+*.bak
+*.tmp
+
+# Ignore uploads/media
+client/public/uploads/
+
+# Ignore database files
+*.sqlite
+*.db
+
+# Ignore test output
+*.out
