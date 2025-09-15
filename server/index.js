@@ -17,7 +17,15 @@ const authRouter = require("./routes/auth");
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+// A secure CORS configuration
+const corsOptions = {
+  // Replace this with your actual Vercel frontend URL
+  origin: "https://getstuffdone-git-main-pratyushjain91.vercel.app",
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
 app.use(express.json({ limit: "20mb" }));
 
 mongoose
