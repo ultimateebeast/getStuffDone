@@ -24,7 +24,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:5000",
+  "proxy": "https://getstuffdone-cl9t.onrender.com",
   "browserslist": {
     "production": [
       ">0.2%",
