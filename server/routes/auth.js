@@ -3,13 +3,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const router = express.Router();
-const fs = require("fs");
-const path = require("path");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 // Password validation helper
 function validatePassword(password) {
-  // Minimum 8 chars, at least one letter and one number
   return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
 }
 
@@ -43,8 +42,7 @@ router.post("/signup", async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
     const user = new User({ username, email, password: hash });
     await user.save();
-    // The previous code to create a user data folder has been removed
-    // because Render's file system is read-only.
+    // Local file system calls were removed to fix the 500 error on Render.
     res.status(201).json({ message: "User created" });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -82,8 +80,12 @@ router.get("/profile", authMiddleware, async (req, res) => {
 });
 
 // Avatar upload
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const upload = multer({
   storage: new CloudinaryStorage({
     cloudinary: cloudinary,
