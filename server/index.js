@@ -21,7 +21,7 @@ const app = express();
 // A secure CORS configuration
 const corsOptions = {
   // Replace this with your actual Vercel frontend URL
-  origin: "https://getstuffdone-git-main-pratyushjain91.vercel.app",
+  origin: "https://get-stuff-done-nine.vercel.app/",
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));

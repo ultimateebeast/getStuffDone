@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://getstuffdone-cl9t.onrender.com/api/:path*"
+    }
+  ]
+}
