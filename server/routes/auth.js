@@ -3,6 +3,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const router = express.Router();
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
 
 // Password validation helper
 function validatePassword(password) {
@@ -24,8 +27,6 @@ function authMiddleware(req, res, next) {
 }
 
 // Signup
-const fs = require("fs");
-const path = require("path");
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -42,14 +43,8 @@ router.post("/signup", async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
     const user = new User({ username, email, password: hash });
     await user.save();
-    // Create user data folder
-    const userDir = path.join(
-      __dirname,
-      "..",
-      "user_data",
-      user._id.toString()
-    );
-    if (!fs.existsSync(userDir)) fs.mkdirSync(userDir, { recursive: true });
+    // The previous code to create a user data folder has been removed
+    // because Render's file system is read-only.
     res.status(201).json({ message: "User created" });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -87,16 +82,14 @@ router.get("/profile", authMiddleware, async (req, res) => {
 });
 
 // Avatar upload
-const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      const userDir = path.join(__dirname, "..", "user_data", req.user.id);
-      if (!fs.existsSync(userDir)) fs.mkdirSync(userDir, { recursive: true });
-      cb(null, userDir);
-    },
-    filename: function (req, file, cb) {
-      cb(null, "avatar" + path.extname(file.originalname));
+  storage: new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: "user_avatars",
+      allowedFormats: ["jpeg", "png", "jpg"],
     },
   }),
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
@@ -110,9 +103,7 @@ router.post(
     try {
       const user = await User.findById(req.user.id);
       if (!user) return res.status(404).json({ message: "User not found" });
-      user.avatar = `/user_data/${user._id}/avatar${path.extname(
-        req.file.originalname
-      )}`;
+      user.avatar = req.file.path;
       await user.save();
       res.json({ avatar: user.avatar });
     } catch (err) {
