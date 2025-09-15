@@ -14,16 +14,28 @@ function TodoApp() {
   const [media, setMedia] = useState(null);
 
   useEffect(() => {
-    axios.get("/api/tasks").then((res) => setTasks(res.data));
+    const token = localStorage.getItem("token");
+    axios
+      .get("/api/tasks", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setTasks(res.data));
   }, []);
 
   const addTask = async () => {
     if (!newTask.trim()) return;
-    const res = await axios.post("/api/tasks", {
-      text: newTask,
-      dueDate,
-      media,
-    });
+    const token = localStorage.getItem("token");
+    const res = await axios.post(
+      "/api/tasks",
+      {
+        text: newTask,
+        dueDate,
+        media,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     setTasks([...tasks, res.data]);
     setNewTask("");
     setDueDate("");
@@ -31,7 +43,10 @@ function TodoApp() {
   };
 
   const deleteTask = async (id) => {
-    await axios.delete(`/api/tasks/${id}`);
+    const token = localStorage.getItem("token");
+    await axios.delete(`/api/tasks/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     setTasks(tasks.filter((t) => t._id !== id));
   };
 
@@ -41,14 +56,24 @@ function TodoApp() {
   };
 
   const saveEdit = async (id) => {
-    const res = await axios.put(`/api/tasks/${id}`, { text: editText });
+    const token = localStorage.getItem("token");
+    const res = await axios.put(
+      `/api/tasks/${id}`,
+      { text: editText },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
     setTasks(tasks.map((t) => (t._id === id ? res.data : t)));
     setEditingId(null);
     setEditText("");
   };
 
   const toggleComplete = async (id, completed) => {
-    const res = await axios.put(`/api/tasks/${id}`, { completed: !completed });
+    const token = localStorage.getItem("token");
+    const res = await axios.put(
+      `/api/tasks/${id}`,
+      { completed: !completed },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
     setTasks(tasks.map((t) => (t._id === id ? res.data : t)));
   };
 

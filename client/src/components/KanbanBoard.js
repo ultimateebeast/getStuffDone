@@ -4,24 +4,23 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const columns = [
   { id: "todo", title: "To-Do" },
-  { id: "inprogress", title: "In Progress" },
   { id: "done", title: "Done" },
 ];
 
 function KanbanBoard() {
-  const [tasks, setTasks] = useState({ todo: [], inprogress: [], done: [] });
+  const [tasks, setTasks] = useState({ todo: [], done: [] });
 
   // Fetch all tasks and sort into columns
   useEffect(() => {
     const fetchTasks = async () => {
-      const res = await axios.get("/api/tasks");
+      const token = localStorage.getItem("token");
+      const res = await axios.get("/api/tasks", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const allTasks = res.data;
       setTasks({
         todo: allTasks.filter(
           (task) => !task.completed && (task.column === "todo" || !task.column)
-        ),
-        inprogress: allTasks.filter(
-          (task) => !task.completed && task.column === "inprogress"
         ),
         done: allTasks.filter((task) => task.completed),
       });
@@ -35,6 +34,7 @@ function KanbanBoard() {
     if (!result.destination) return;
     const sourceCol = result.source.droppableId;
     const destCol = result.destination.droppableId;
+    const token = localStorage.getItem("token");
     if (sourceCol !== destCol) {
       const task = tasks[sourceCol][result.source.index];
       // If moving to 'done', mark completed
@@ -42,16 +42,17 @@ function KanbanBoard() {
         destCol === "done"
           ? { column: destCol, completed: true }
           : { column: destCol, completed: false };
-      await axios.put(`/api/tasks/${task._id}`, update);
+      await axios.put(`/api/tasks/${task._id}`, update, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       // Refetch tasks
-      const res = await axios.get("/api/tasks");
+      const res = await axios.get("/api/tasks", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const allTasks = res.data;
       setTasks({
         todo: allTasks.filter(
           (task) => !task.completed && (task.column === "todo" || !task.column)
-        ),
-        inprogress: allTasks.filter(
-          (task) => !task.completed && task.column === "inprogress"
         ),
         done: allTasks.filter((task) => task.completed),
       });

@@ -13,6 +13,7 @@ const analyticsRouter = require("./routes/analytics");
 const remindersRouter = require("./routes/reminders");
 const notificationsRouter = require("./routes/notifications");
 const realtimeRouter = require("./routes/realtime");
+const authRouter = require("./routes/auth");
 
 dotenv.config();
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api/analytics", analyticsRouter);
 app.use("/api/reminders", remindersRouter);
 app.use("/api/notifications", notificationsRouter);
 app.use("/api/realtime", realtimeRouter);
+app.use("/api/auth", authRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

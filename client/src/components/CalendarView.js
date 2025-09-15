@@ -7,8 +7,12 @@ function CalendarView() {
 
   const fetchTasks = async () => {
     if (range.start && range.end) {
+      const token = localStorage.getItem("token");
       const res = await axios.get(
-        `/api/calendar?start=${range.start}&end=${range.end}`
+        `/api/calendar?start=${range.start}&end=${range.end}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       setTasks(res.data);
     }
